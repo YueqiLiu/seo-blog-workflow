@@ -3,6 +3,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 from seo_blog_workflow.config import load_config
 from seo_blog_workflow.runtime import connect, import_csv, run
 
@@ -15,6 +16,73 @@ class FakeAPI:
 
 
 class RuntimeTests(unittest.TestCase):
+    def test_completed_drafts_do_not_starve_new_keywords(self):
+        config = load_config('config.example.json')
+        config['publication']['daily_target'] = 1
+        with tempfile.TemporaryDirectory() as folder:
+            config['publication']['output_directory'] = folder
+            db = connect(':memory:')
+            for keyword in ('first', 'second'):
+                db.execute('INSERT INTO keywords(keyword,payload) VALUES (?,?)',
+                           (keyword, json.dumps({'keyword': keyword, 'search_volume': 500, 'kd': 20})))
+            db.commit()
+            self.assertEqual(run(db, config, FakeAPI())['exported'], 1)
+            second = run(db, config, FakeAPI())
+            self.assertEqual((second['exported'], second['skipped_complete']), (1, 1))
+            self.assertEqual(db.execute("SELECT COUNT(*) FROM keywords WHERE status='draft'").fetchone()[0], 2)
+
+    def test_missing_cover_is_restored_without_rewriting_article(self):
+        config = load_config('config.example.json')
+        with tempfile.TemporaryDirectory() as folder:
+            config['publication']['output_directory'] = folder
+            db = connect(':memory:')
+            import_csv(db, 'examples/keywords.csv')
+            run(db, config, FakeAPI())
+            row = db.execute('SELECT * FROM keywords').fetchone()
+            cover = Path(row['output_path']).parent / 'cover.svg'
+            cover.unlink()
+            class NoCalls:
+                def structured(self, prompt):
+                    raise AssertionError('Article and relevance must be reused')
+            self.assertEqual(run(db, config, NoCalls())['exported'], 1)
+            self.assertTrue(cover.is_file())
+
+    def test_image_interruption_preserves_article_and_releases_generator_lock(self):
+        config = load_config('config.example.json')
+        with tempfile.TemporaryDirectory() as folder:
+            config['publication']['output_directory'] = str(Path(folder) / 'output')
+            path = str(Path(folder) / 'workflow.sqlite3')
+            db = connect(path)
+            import_csv(db, 'examples/keywords.csv')
+            with patch('seo_blog_workflow.images.create_image', side_effect=KeyboardInterrupt):
+                with self.assertRaises(KeyboardInterrupt):
+                    run(db, config, FakeAPI())
+            db.close()
+            db = connect(path)
+            self.assertIsNotNone(db.execute('SELECT article FROM keywords').fetchone()[0])
+            class NoCalls:
+                def structured(self, prompt):
+                    raise AssertionError('Saved article must survive a process interruption')
+            self.assertEqual(run(db, config, NoCalls())['exported'], 1)
+            db.close()
+
+    def test_second_generator_skips_while_first_persists_stages(self):
+        config = load_config('config.example.json')
+        with tempfile.TemporaryDirectory() as folder:
+            config['publication']['output_directory'] = str(Path(folder) / 'output')
+            path = str(Path(folder) / 'workflow.sqlite3')
+            first, second = connect(path), connect(path)
+            import_csv(first, 'examples/keywords.csv')
+            nested = []
+            class Concurrent(FakeAPI):
+                def structured(self, prompt):
+                    nested.append(run(second, config, FakeAPI()))
+                    return super().structured(prompt)
+            self.assertEqual(run(first, config, Concurrent())['exported'], 1)
+            self.assertTrue(all(item['status'] == 'skipped_already_running' for item in nested))
+            first.close()
+            second.close()
+
     def test_unrepaired_draft_does_not_export_or_block_next(self):
         config = load_config("config.example.json")
         with tempfile.TemporaryDirectory() as folder:

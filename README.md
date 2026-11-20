@@ -128,6 +128,22 @@ count as published, so repeated runs are not a daily publishing scheduler.
 Failed articles do not block completed articles. A zero target stops new exports.
 Missing Semrush data is excluded by default and can be explicitly allowed.
 
+Complete drafts are skipped on subsequent runs and do not consume the per-run
+export allowance. Missing Markdown or covers are restored from saved article
+data. Image reuse follows the configured mode, so a template SVG does not mask
+a missing API PNG. Relevance results are reused for the same product/model
+profile while retrying an article without a saved body.
+
+Generation saves completed relevance, article and editorial stages separately.
+Interrupted work retains these checkpoints. A sidecar SQLite lock serializes
+generators for each file-backed database and is released by SQLite when the
+process exits. Keep the database and its `.generation-lock` sidecar on the same
+local filesystem. This locking does not coordinate multiple copies of a database
+or distributed workers. Concurrent generators report `skipped_already_running`.
+Generated covers and Markdown use atomic replacement to avoid partial output.
+An interruption during a provider request may still leave its paid outcome
+unknown; these checkpoints cannot guarantee exactly-once provider billing.
+
 Planned stages: collect → enrich → relevance → deduplicate → generate → validate
 → publish → verify. Persist stage state, use unique publication identifiers and
 worker leases, and reserve quota transactionally to prevent concurrent overrun.
