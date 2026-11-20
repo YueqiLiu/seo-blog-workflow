@@ -1,0 +1,7 @@
+include README.md STATUS.md LICENSE config.example.json .env.example
+include examples/keywords.csv
+include examples/config.aisa.json
+include examples/config.aisa-research.json
+include examples/config.producthunt-mcp.json
+prune output
+global-exclude __pycache__ *.pyc *.sqlite3*

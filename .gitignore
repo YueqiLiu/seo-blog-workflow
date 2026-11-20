@@ -1,0 +1,16 @@
+.env
+.env.*
+!.env.example
+__pycache__/
+.venv/
+*.egg-info/
+output/
+.DS_Store
+*.sqlite3*
+config.json
+.mcp-auth/
+dist/
+build/
+# Personal integration fixtures are retained locally.
+examples/*wanderchina*
+examples/WANDERCHINA.md

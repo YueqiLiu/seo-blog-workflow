@@ -1,0 +1,9 @@
+{
+  "product": {"website": "https://example.com", "name": "Your product", "industries": ["small business"], "use_cases": ["appointment booking"], "excluded_topics": []},
+  "sources": {"product_hunt": false, "x": false, "google_trends": false, "semrush": false},
+  "research": {"language": "en", "country": "us", "competitors": [], "subreddits": []},
+  "selection": {"volume_min": 100, "volume_max": null, "kd_min": 0, "kd_max": 49.9, "missing_metrics": "exclude", "relevance_min": 60},
+  "publication": {"daily_target": 15, "timezone": "Asia/Shanghai", "mode": "draft", "output_directory": "output"},
+  "models": {"base_url": "https://api.openai.com/v1", "text_model": "", "api_key_env": "LLM_API_KEY"},
+  "images": {"mode": "template", "base_url": "https://api.openai.com/v1", "model": "", "api_key_env": "IMAGE_API_KEY", "size": "1536x1024"}
+}

@@ -1,0 +1,9 @@
+{
+  "product": {"website": "https://example.com", "name": "Your product", "industries": ["small business"], "use_cases": ["appointment booking"], "excluded_topics": []},
+  "sources": {"product_hunt": false, "x": false, "google_trends": false, "semrush": false},
+  "research": {"language": "en", "country": "us", "competitors": [], "subreddits": []},
+  "selection": {"volume_min": 100, "volume_max": null, "kd_min": 0, "kd_max": 49.9, "missing_metrics": "exclude", "relevance_min": 60},
+  "publication": {"daily_target": 15, "timezone": "Asia/Shanghai", "mode": "draft", "output_directory": "output"},
+  "models": {"provider": "aisa", "base_url": "https://api.aisa.one/v1", "text_model": "gpt-5.4-mini", "api_key_env": "AISA_API_KEY"},
+  "images": {"mode": "template"}
+}

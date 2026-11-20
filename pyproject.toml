@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "seo-blog-workflow"
+version = "0.1.0"
+description = "Configurable keyword research and SEO blog automation"
+requires-python = ">=3.10"
+readme = "README.md"
+license = "MIT"
+authors = [{name = "Yueqi Liu"}]
+
+[project.urls]
+Repository = "https://github.com/YueqiLiu/seo-blog-workflow"
+Issues = "https://github.com/YueqiLiu/seo-blog-workflow/issues"
+
+[project.optional-dependencies]
+mcp = ["mcp>=1.30,<2"]
+
+[project.scripts]
+seo-blog = "seo_blog_workflow.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,0 +1,1 @@
+"""Configurable SEO blog automation."""

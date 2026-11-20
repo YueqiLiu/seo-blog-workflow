@@ -1,0 +1,13 @@
+{
+  "product": {"website": "https://example.com", "name": "Your product", "industries": ["small business"], "use_cases": ["appointment booking"], "excluded_topics": []},
+  "sources": {"product_hunt": true, "x": false, "google_trends": false, "semrush": false},
+  "research": {"language": "en", "country": "us", "seed_keywords": [], "competitors": [], "subreddits": [], "max_candidates": 20,
+    "product_hunt": {"transport": "mcp", "topics": [], "days": 7, "page_size": 10, "max_pages": 1,
+      "mcp_server": "producthunt", "mcp_tool": "search_products", "mcp_arguments": {"query": "appointment booking"}}},
+  "mcp_servers": {"producthunt": {"url": "https://mcp.producthunt.com/mcp", "auth": "none",
+    "read_only_tools": ["search_products", "get_product_leaderboard"]}},
+  "selection": {"volume_min": 100, "volume_max": null, "kd_min": 0, "kd_max": 49.9, "missing_metrics": "allow", "relevance_min": 60},
+  "publication": {"daily_target": 15, "timezone": "Asia/Shanghai", "mode": "draft", "output_directory": "output"},
+  "models": {"provider": "aisa", "text_model": "gpt-5.4-mini", "api_key_env": "AISA_API_KEY"},
+  "images": {"mode": "template"}
+}
