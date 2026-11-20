@@ -9,6 +9,10 @@ Reviewed 2026-11-20. Version 0.1.0 is an open-source preview.
 - Model relevance using a manually supplied product profile.
 - OpenAI-compatible text APIs and explicit AISA provider settings.
 - Structured article generation, bounded repairs, failure isolation and backups.
+- Restart checkpoints persist relevance and article stages independently. Complete
+  drafts no longer block new terms. Missing covers/Markdown can be restored.
+- File-backed generation uses a crash-released SQLite sidecar lock. Generated
+  covers and Markdown are replaced atomically. Regression suite totals 45 tests.
 - Markdown export, template covers and synchronous base64 PNG image APIs.
 - AISA live text and single-cover generation validated by the owner.
 - AISA X search and Semrush seed/domain collection, metric filtering, provenance,
@@ -38,10 +42,11 @@ Reviewed 2026-11-20. Version 0.1.0 is an open-source preview.
 
 ## Next milestones
 
-1. Generic GitHub publication adapter with draft/PR/publish states and explicit
-   publication verification; transactional quota and idempotent recovery.
-2. Product website profiles and optional collection adapters with tests.
-3. End-to-end acceptance, clean examples, installation docs and public release.
+1. Connect article export, PR delivery, deployment verification and publication
+   accounting into one durable workflow. Add supported website bundle adapters.
+2. Extract editable product website profiles and fetch source-page references.
+3. Validate remaining live services and browser OAuth, then add scheduling and
+   Google Trends collection. Semantic deduplication is a further improvement.
 
 Personal case fixtures, databases, generated output, and OAuth credentials are
 excluded from the initial repository. The legacy `export-wanderchina` adapter
